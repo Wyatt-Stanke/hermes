@@ -1,8 +1,9 @@
-import { Block } from "@/constants";
-import { error, info, warn } from "@/logger";
-import { Schematic } from "@/schematic/schematic";
+import { Block } from "backend/src/constants";
+import { error, info, warn } from "backend/src/logger";
+import { Schematic } from "backend/src/schematic/schematic";
 import type { Vec3 } from "vec3";
 import v from "vec3";
+import { Component } from "backend/src/components/component";
 
 export class UntracedWire {
 	constructor(
@@ -11,13 +12,14 @@ export class UntracedWire {
 	) {}
 }
 
-export class Wire {
+export class Wire extends Component {
 	constructor(
 		public dusts: Vec3[],
 		public start: Vec3 = dusts[0],
 		public end: Vec3 = dusts[dusts.length - 1],
 		public repeaters: { location: Vec3; direction: Vec3 }[] = [],
 	) {
+		super();
 		for (const dust of this.dusts) {
 			if (dust.x < 0 || dust.y < 0 || dust.z < 0) {
 				warn(`Dust at ${dust} is out of bounds`);

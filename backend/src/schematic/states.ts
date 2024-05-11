@@ -1,3 +1,4 @@
+import { fatal } from "backend/src/logger";
 import type { Block, IndexedData } from "minecraft-data";
 
 type BlockProperties = {
@@ -30,7 +31,7 @@ export function getStateId(
 	let data = 0;
 	for (const [key, value] of properties) {
 		if (!block.states) {
-			throw new Error(`Block ${name} has no states`);
+			fatal(`Block ${name} has no states`);
 		}
 		data += getStateValue(block.states, key, value);
 	}
@@ -59,7 +60,7 @@ export function parseValue(
 	state: NonNullable<Block["states"]>[number],
 ) {
 	if (state.type === "enum") {
-		if (!state.values) throw new Error("Enum state has no values");
+		if (!state.values) fatal("Enum state has no values");
 		return state.values.indexOf(value);
 	}
 	if (value === "true") return 0;
@@ -71,10 +72,10 @@ export function parseValue(
 // 	value: boolean,
 // 	state: NonNullable<DataBlock["states"]>[number],
 // ): number | boolean {
-// 	if (!state) throw new Error("No state");
+// 	if (!state) fatal("No state");
 
 // 	if (state.type === "enum") {
-// 		if (!state.values) throw new Error("No values");
+// 		if (!state.values) fatal("No values");
 // 		return state.values.indexOf(value);
 // 	}
 // 	if (state.type === "bool") {

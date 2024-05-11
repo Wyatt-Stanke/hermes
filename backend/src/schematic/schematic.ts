@@ -1,13 +1,13 @@
 import zlib from "node:zlib";
-import * as sponge from "@/schematic/sponge";
+import * as sponge from "backend/src/schematic/sponge";
 import mcData, { type IndexedData } from "minecraft-data";
 import type { Block } from "prismarine-block";
 import getBlock from "prismarine-block";
 import nbt, { type NBT } from "prismarine-nbt";
 import registry from "prismarine-registry";
 import v, { Vec3 } from "vec3";
-import { debug, error, info, warn } from "@/logger";
-import { VERSION } from "@/constants";
+import { debug, error, fatal, info, warn } from "backend/src/logger";
+import { VERSION } from "backend/src/constants";
 
 interface PCRegistry extends IndexedData {
 	loadDimensionCodec(codec: NBT): void;
@@ -17,8 +17,8 @@ interface PCRegistry extends IndexedData {
 interface BedrockRegistry extends IndexedData {}
 type Registry = PCRegistry & BedrockRegistry;
 
-const formatVec3 = (vec: Vec3) => `(${vec.x}, ${vec.y}, ${vec.z})`;
-const parseVec3 = (str: string): Vec3 => {
+export const formatVec3 = (vec: Vec3) => `(${vec.x}, ${vec.y}, ${vec.z})`;
+export const parseVec3 = (str: string): Vec3 => {
 	const [x, y, z] = str.slice(1, -1).split(", ").map(Number);
 	return new Vec3(x, y, z);
 };
@@ -97,7 +97,7 @@ export class Schematic {
 			p.y >= this.size.y ||
 			p.z >= this.size.z
 		) {
-			throw new Error("Position out of bounds");
+			fatal("Position out of bounds");
 		}
 		return this.blockIndex[formatVec3(p)] ?? 0;
 	}
@@ -145,6 +145,17 @@ export class Schematic {
 				const pos = parseVec3(index).plus(offset);
 				this.blockIndex[formatVec3(pos)] = block;
 			}
+
+			// Shift tags
+			const oldTags = [...this.blockTags];
+			this.blockTags = [];
+			for (const [pos, tag] of oldTags) {
+				this.blockTags.push([pos.plus(offset), tag]);
+			}
+
+			max[0] += offset.x;
+			max[1] += offset.y;
+			max[2] += offset.z;
 		}
 
 		max[0]++;
@@ -336,7 +347,7 @@ export class Schematic {
 			const blockName = posOrBlock;
 			// TODO: some blocks not here
 			// const block = this.data.blocksByName[blockName];
-			// if (!block) throw new Error(`Block ${blockName} not found`);
+			// if (!block) fatal(`Block ${blockName} not found`);
 			// Find the first block with the name
 			const pos = await this.map((b, p) =>
 				b.name === blockName ? p : null,
@@ -344,11 +355,11 @@ export class Schematic {
 				const p = pos.filter((p): p is Vec3 => p !== null);
 				if (p.length === 0) {
 					error(`Block ${blockName} not found`);
-					throw new Error(`Block ${blockName} not found`);
+					fatal(`Block ${blockName} not found`);
 				}
 				if (p.length > 1 && !options?.allowMultiple) {
 					error(`Multiple blocks ${blockName} found at ${p}`);
-					throw new Error(`Multiple blocks ${blockName} found at ${p}`);
+					fatal(`Multiple blocks ${blockName} found at ${p}`);
 				}
 				if (p.length > 1 && options?.allowMultiple) {
 					// Sort by y, then x, then z
@@ -430,7 +441,7 @@ export class Schematic {
 			!palette ||
 			!blocks
 		) {
-			throw new Error(
+			fatal(
 				`Parsing failed missing attribute ${!version ? "version " : ""}${
 					Number.isNaN(sizeX) ? "size: x " : ""
 				}${Number.isNaN(sizeY) ? "size: y " : ""}${

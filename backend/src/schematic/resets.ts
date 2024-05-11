@@ -1,6 +1,6 @@
-import { Block } from "@/constants";
+import { Block } from "backend/src/constants";
 import type { Schematic } from "./schematic";
-import { debug, info, warn } from "@/logger";
+import { debug, fatal, info, warn } from "backend/src/logger";
 
 export function applyResets(schem: Schematic) {
 	const resets = [
@@ -28,9 +28,7 @@ export function applyResets(schem: Schematic) {
 		);
 
 		if (!newBlock.stateId && newBlock.stateId !== 0)
-			throw new Error(
-				`Failed to create block from properties: ${JSON.stringify(props)}`,
-			);
+			fatal(`Failed to create block from properties: ${JSON.stringify(props)}`);
 
 		if (block.stateId !== newBlock.stateId) {
 			resetCount++;

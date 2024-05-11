@@ -1,5 +1,6 @@
-import { Schematic } from "@/schematic/schematic";
-import { getStateId, parseBlockName } from "@/schematic/states";
+import { fatal } from "backend/src/logger";
+import { Schematic } from "backend/src/schematic/schematic";
+import { getStateId, parseBlockName } from "backend/src/schematic/states";
 import mcData from "minecraft-data";
 import type { Block as DataBlock, IndexedData } from "minecraft-data";
 import type { Block } from "prismarine-block";
@@ -62,8 +63,7 @@ function byteArrayToVarintArray(byteArray: number[]) {
 		let varintLength = 0;
 		while (true) {
 			value |= (byteArray[i] & 127) << (varintLength++ * 7);
-			if (varintLength > 5)
-				throw new Error("VarInt too big (probably corrupted data)");
+			if (varintLength > 5) fatal("VarInt too big (probably corrupted data)");
 			if ((byteArray[i++] & 128) !== 128) break;
 		}
 		varintArray.push(value);
@@ -128,7 +128,7 @@ export function write(schematic: {
 }): NBT {
 	const dataVersion = getDataVersion(schematic.version);
 	if (!dataVersion) {
-		throw new Error(`Unsupported version ${schematic.version}`);
+		fatal(`Unsupported version ${schematic.version}`);
 	}
 
 	return {

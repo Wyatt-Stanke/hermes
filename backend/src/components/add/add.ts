@@ -1,6 +1,7 @@
-import type { Schematic } from "@/schematic/schematic";
-import { Block } from "@/constants";
-import { readSchematic } from "@/components/utils";
+import type { Schematic } from "backend/src/schematic/schematic";
+import { Block } from "backend/src/constants";
+import { readSchematic } from "backend/src/components/utils";
+import { Component } from "backend/src/components/component";
 
 export async function postProcessSchematic(
 	schem: Schematic,
@@ -36,14 +37,16 @@ const selectAdder = (bits: number): Schematic => {
 		.sort((a, b) => a.ticks - b.ticks)[0];
 
 	if (!selectedAdder) {
-		throw new Error(`No adder found for ${bits} bits`);
+		fatal(`No adder found for ${bits} bits`);
 	}
 
 	return selectedAdder.schematic;
 };
 
-export class AdderComponent {
-	constructor(public bits: number) {}
+export class AdderComponent extends Component {
+	constructor(public bits: number) {
+		super();
+	}
 
 	render(): Schematic {
 		return selectAdder(this.bits);

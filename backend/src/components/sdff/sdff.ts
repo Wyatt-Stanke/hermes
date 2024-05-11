@@ -1,8 +1,10 @@
 import v from "vec3";
 import { readSchematic } from "../utils";
-import { Block, data, Registry, type DataBlock } from "@/constants";
-import { Schematic } from "@/schematic/schematic";
+import { Block, data, Registry, type DataBlock } from "backend/src/constants";
+import { Schematic } from "backend/src/schematic/schematic";
 import { comp } from "prismarine-nbt";
+import { Component } from "backend/src/components/component";
+import { fatal } from "backend/src/logger";
 
 export async function postProcessSchematic(
 	schem: Schematic,
@@ -23,11 +25,13 @@ export const SDFFSafeSchematic = await readSchematic(
 // 	"./src/components/sdff/sdff_fast.schem",
 // ).then(postProcessSchematic);
 
-export class SDFFComponent {
+export class SDFFComponent extends Component {
 	constructor(
 		public stackHeight: number,
 		public mode: "safe" | "fast" = "safe",
-	) {}
+	) {
+		super();
+	}
 
 	render(): Schematic {
 		const schem = Schematic.empty;
@@ -39,7 +43,7 @@ export class SDFFComponent {
 				component = SDFFSafeSchematic;
 				break;
 			case "fast":
-				throw new Error("Fast mode not implemented");
+				fatal("Fast mode not implemented");
 			// component = SDFFFastSchematic;
 		}
 

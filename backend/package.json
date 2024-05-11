@@ -7,7 +7,7 @@
     "@types/bun": "latest"
   },
   "scripts": {
-    "node:build": "TSC_COMPILE_ON_ERROR=true tsc src/*.ts src/**/*.ts --target esnext --module nodenext --moduleResolution nodenext --outDir out",
+    "node:build": "tsc src/*.ts src/**/*.ts --target esnext --module nodenext --moduleResolution nodenext --outDir out",
     "node:move": "find src -type f ! -name '*.ts' -exec sh -c 'cp \"$0\" out/\"${0#src/}\"' {} \\;",
     "node": "bun run node:build && bun run node:move"
   },
@@ -15,6 +15,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@types/uuid": "^9.0.8",
     "colorette": "^2.0.20",
     "debug": "^4.3.4",
     "minecraft-data": "^3.65.0",
@@ -22,6 +23,7 @@
     "prismarine-chunk": "^1.35.0",
     "prismarine-nbt": "^2.5.0",
     "prismarine-registry": "^1.7.0",
+    "uuid": "^9.0.1",
     "vec3": "^0.1.10",
     "zod": "^3.23.6"
   }

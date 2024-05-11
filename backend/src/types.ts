@@ -18,8 +18,7 @@ export interface CellBase {
 		full_case?: string;
 	};
 	port_directions: IDict<"input" | "output">;
-	// connections: any;
-	connections: unknown;
+	connections: IDict<Conn>;
 }
 export interface UnaryCell extends CellBase {
 	type:
@@ -320,6 +319,12 @@ export type Cell =
 	| Mem
 	| Print;
 
+export interface Net {
+	hide_name: number;
+	attributes: IDict<string>;
+	bits: number[];
+}
+
 export interface Module {
 	attributes: IDict<string>;
 	parameter_default_values?: IDict<string>;
@@ -328,7 +333,7 @@ export interface Module {
 	cells: IDict<Cell>;
 	// netnames: IDict<Object>;
 	// TODO: figure out what netnames are
-	netnames: IDict<unknown>;
+	netnames: IDict<Net>;
 }
 
 export interface YosysData {

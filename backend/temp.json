@@ -1,11 +1,11 @@
 {
-  "creator": "Yosys 0.40+45 (git sha1 2631c7e91, c++ 13.1.6 -fPIC -Os)",
+  "creator": "Yosys 0.41+8 (git sha1 1a54e8d47, c++ 13.1.6 -fPIC -Os)",
   "modules": {
     "uut_always01": {
       "attributes": {
         "hdlname": "uut_always01",
         "top": "00000000000000000000000000000001",
-        "src": "./yosys/tests/simple/always01.v:1.1-10.10"
+        "src": "./always.v:1.1-10.10"
       },
       "ports": {
         "clock": {
@@ -18,22 +18,22 @@
         },
         "count": {
           "direction": "output",
-          "bits": [ 4, 5, 6, 7 ]
+          "bits": [ 4, 5, 6, 7, 8, 9, 10, 11 ]
         }
       },
       "cells": {
-        "$add$./yosys/tests/simple/always01.v:8$2": {
+        "$add$./always.v:8$2": {
           "hide_name": 1,
           "type": "$add",
           "parameters": {
             "A_SIGNED": "00000000000000000000000000000000",
-            "A_WIDTH": "00000000000000000000000000000100",
+            "A_WIDTH": "00000000000000000000000000001000",
             "B_SIGNED": "00000000000000000000000000000000",
             "B_WIDTH": "00000000000000000000000000000001",
-            "Y_WIDTH": "00000000000000000000000000000100"
+            "Y_WIDTH": "00000000000000000000000000001000"
           },
           "attributes": {
-            "src": "./yosys/tests/simple/always01.v:8.24-8.33"
+            "src": "./always.v:8.23-8.32"
           },
           "port_directions": {
             "A": "input",
@@ -41,9 +41,9 @@
             "Y": "output"
           },
           "connections": {
-            "A": [ 4, 5, 6, 7 ],
+            "A": [ 4, 5, 6, 7, 8, 9, 10, 11 ],
             "B": [ "1" ],
-            "Y": [ 8, 9, 10, 11 ]
+            "Y": [ 12, 13, 14, 15, 16, 17, 18, 19 ]
           }
         },
         "$auto$ff.cc:266:slice$6": {
@@ -52,11 +52,11 @@
           "parameters": {
             "CLK_POLARITY": "00000000000000000000000000000001",
             "SRST_POLARITY": "00000000000000000000000000000001",
-            "SRST_VALUE": "0000",
-            "WIDTH": "00000000000000000000000000000100"
+            "SRST_VALUE": "00000000",
+            "WIDTH": "00000000000000000000000000001000"
           },
           "attributes": {
-            "src": "./yosys/tests/simple/always01.v:7.1-8.34"
+            "src": "./always.v:7.1-8.33"
           },
           "port_directions": {
             "CLK": "input",
@@ -66,16 +66,16 @@
           },
           "connections": {
             "CLK": [ 2 ],
-            "D": [ 8, 9, 10, 11 ],
-            "Q": [ 4, 5, 6, 7 ],
+            "D": [ 12, 13, 14, 15, 16, 17, 18, 19 ],
+            "Q": [ 4, 5, 6, 7, 8, 9, 10, 11 ],
             "SRST": [ 3 ]
           }
         }
       },
       "netnames": {
-        "$add$./yosys/tests/simple/always01.v:8$2_Y": {
+        "$add$./always.v:8$2_Y": {
           "hide_name": 1,
-          "bits": [ 8, 9, 10, 11 ],
+          "bits": [ 12, 13, 14, 15, 16, 17, 18, 19 ],
           "attributes": {
           }
         },
@@ -83,21 +83,21 @@
           "hide_name": 0,
           "bits": [ 2 ],
           "attributes": {
-            "src": "./yosys/tests/simple/always01.v:3.7-3.12"
+            "src": "./always.v:3.7-3.12"
           }
         },
         "count": {
           "hide_name": 0,
-          "bits": [ 4, 5, 6, 7 ],
+          "bits": [ 4, 5, 6, 7, 8, 9, 10, 11 ],
           "attributes": {
-            "src": "./yosys/tests/simple/always01.v:4.14-4.19"
+            "src": "./always.v:4.14-4.19"
           }
         },
         "reset": {
           "hide_name": 0,
           "bits": [ 3 ],
           "attributes": {
-            "src": "./yosys/tests/simple/always01.v:3.14-3.19"
+            "src": "./always.v:3.14-3.19"
           }
         }
       }
