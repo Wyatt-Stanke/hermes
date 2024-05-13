@@ -1,30 +1,37 @@
 {
-  "name": "hermes",
+  "name": "@hermes/backend",
   "module": "src/index.ts",
+  "main": "out/src/index.js",
+  "types": "out/src/index.d.ts",
   "type": "module",
   "devDependencies": {
     "@biomejs/biome": "^1.7.3",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/cors": "^2.8.17",
+    "ts-patch": "^3.1.2",
+    "typescript-transform-paths": "^3.4.7"
   },
   "scripts": {
-    "node:build": "tsc src/*.ts src/**/*.ts --target esnext --module nodenext --moduleResolution nodenext --outDir out",
-    "node:move": "find src -type f ! -name '*.ts' -exec sh -c 'cp \"$0\" out/\"${0#src/}\"' {} \\;",
-    "node": "bun run node:build && bun run node:move"
+    "build": "tspc --outDir out"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@trpc/client": "^11.0.0-rc.366",
+    "@trpc/server": "^11.0.0-rc.366",
     "@types/uuid": "^9.0.8",
     "colorette": "^2.0.20",
+    "cors": "^2.8.5",
     "debug": "^4.3.4",
     "minecraft-data": "^3.65.0",
     "prismarine-block": "^1.17.1",
     "prismarine-chunk": "^1.35.0",
     "prismarine-nbt": "^2.5.0",
     "prismarine-registry": "^1.7.0",
+    "superjson": "^2.2.1",
     "uuid": "^9.0.1",
     "vec3": "^0.1.10",
-    "zod": "^3.23.6"
+    "zod": "^3.23.8"
   }
 }

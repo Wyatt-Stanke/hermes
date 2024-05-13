@@ -1,9 +1,9 @@
-import { Block } from "backend/src/constants";
-import { error, info, warn } from "backend/src/logger";
-import { Schematic } from "backend/src/schematic/schematic";
+import { Block } from "@/constants";
+import { error, info, warn } from "@/logger";
+import { Schematic } from "@/schematic/schematic";
 import type { Vec3 } from "vec3";
 import v from "vec3";
-import { Component } from "backend/src/components/component";
+import { Component } from "@/components/component";
 
 export class UntracedWire {
 	constructor(

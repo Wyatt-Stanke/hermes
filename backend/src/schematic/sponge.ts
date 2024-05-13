@@ -1,6 +1,6 @@
-import { fatal } from "backend/src/logger";
-import { Schematic } from "backend/src/schematic/schematic";
-import { getStateId, parseBlockName } from "backend/src/schematic/states";
+import { fatal } from "@/logger";
+import { Schematic } from "@/schematic/schematic";
+import { getStateId, parseBlockName } from "@/schematic/states";
 import mcData from "minecraft-data";
 import type { Block as DataBlock, IndexedData } from "minecraft-data";
 import type { Block } from "prismarine-block";

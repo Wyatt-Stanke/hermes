@@ -1,7 +1,8 @@
-import { Schematic, formatVec3 } from "backend/src/schematic/schematic";
+import { Schematic, formatVec3 } from "@/schematic/schematic";
 import { Component } from "./component";
-import { Block } from "backend/src/constants";
+import { Block } from "@/constants";
 import v from "vec3";
+import { fatal } from "@/logger";
 
 export class ConstantComponent extends Component {
 	constructor(public values: boolean[]) {

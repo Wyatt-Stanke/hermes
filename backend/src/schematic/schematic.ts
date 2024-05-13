@@ -1,13 +1,13 @@
 import zlib from "node:zlib";
-import * as sponge from "backend/src/schematic/sponge";
+import * as sponge from "@/schematic/sponge";
 import mcData, { type IndexedData } from "minecraft-data";
 import type { Block } from "prismarine-block";
 import getBlock from "prismarine-block";
 import nbt, { type NBT } from "prismarine-nbt";
 import registry from "prismarine-registry";
 import v, { Vec3 } from "vec3";
-import { debug, error, fatal, info, warn } from "backend/src/logger";
-import { VERSION } from "backend/src/constants";
+import { debug, error, fatal, info, warn } from "@/logger";
+import { VERSION } from "@/constants";
 
 interface PCRegistry extends IndexedData {
 	loadDimensionCodec(codec: NBT): void;

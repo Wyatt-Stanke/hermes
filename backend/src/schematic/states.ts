@@ -1,4 +1,4 @@
-import { fatal } from "backend/src/logger";
+import { fatal } from "@/logger";
 import type { Block, IndexedData } from "minecraft-data";
 
 type BlockProperties = {

@@ -1,7 +1,8 @@
-import type { Schematic } from "backend/src/schematic/schematic";
-import { Block } from "backend/src/constants";
-import { readSchematic } from "backend/src/components/utils";
-import { Component } from "backend/src/components/component";
+import type { Schematic } from "@/schematic/schematic";
+import { Block } from "@/constants";
+import { readSchematic } from "@/components/utils";
+import { Component } from "@/components/component";
+import { fatal } from "@/logger";
 
 export async function postProcessSchematic(
 	schem: Schematic,

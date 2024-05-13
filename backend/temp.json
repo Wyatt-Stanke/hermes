@@ -1,11 +1,11 @@
 {
-  "creator": "Yosys 0.41+8 (git sha1 1a54e8d47, c++ 13.1.6 -fPIC -Os)",
+  "creator": "Yosys 0.41+69 (git sha1 07ac4c2fa, c++ 13.1.6 -fPIC -Os)",
   "modules": {
     "uut_always01": {
       "attributes": {
         "hdlname": "uut_always01",
         "top": "00000000000000000000000000000001",
-        "src": "./always.v:1.1-10.10"
+        "src": "temp.v:2.1-11.10"
       },
       "ports": {
         "clock": {
@@ -22,7 +22,7 @@
         }
       },
       "cells": {
-        "$add$./always.v:8$2": {
+        "$add$temp.v:9$2": {
           "hide_name": 1,
           "type": "$add",
           "parameters": {
@@ -33,7 +33,7 @@
             "Y_WIDTH": "00000000000000000000000000001000"
           },
           "attributes": {
-            "src": "./always.v:8.23-8.32"
+            "src": "temp.v:9.23-9.32"
           },
           "port_directions": {
             "A": "input",
@@ -56,7 +56,7 @@
             "WIDTH": "00000000000000000000000000001000"
           },
           "attributes": {
-            "src": "./always.v:7.1-8.33"
+            "src": "temp.v:8.1-9.33"
           },
           "port_directions": {
             "CLK": "input",
@@ -73,7 +73,7 @@
         }
       },
       "netnames": {
-        "$add$./always.v:8$2_Y": {
+        "$add$temp.v:9$2_Y": {
           "hide_name": 1,
           "bits": [ 12, 13, 14, 15, 16, 17, 18, 19 ],
           "attributes": {
@@ -83,21 +83,21 @@
           "hide_name": 0,
           "bits": [ 2 ],
           "attributes": {
-            "src": "./always.v:3.7-3.12"
+            "src": "temp.v:4.7-4.12"
           }
         },
         "count": {
           "hide_name": 0,
           "bits": [ 4, 5, 6, 7, 8, 9, 10, 11 ],
           "attributes": {
-            "src": "./always.v:4.14-4.19"
+            "src": "temp.v:5.14-5.19"
           }
         },
         "reset": {
           "hide_name": 0,
           "bits": [ 3 ],
           "attributes": {
-            "src": "./always.v:3.14-3.19"
+            "src": "temp.v:4.14-4.19"
           }
         }
       }

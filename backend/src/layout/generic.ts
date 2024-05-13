@@ -34,13 +34,11 @@ export class UUID {
 	constructor(public uuid: string = v4()) {}
 }
 
-export class Generic2DComponent {
-	constructor(
-		public name: string,
-		public size: Vec2,
-		public ports: Map<string, Vec2>,
-		public uuid: UUID = new UUID(),
-	) {}
+export interface Generic2DComponent {
+	name: string;
+	size: Vec2;
+	ports: { [key: string]: Vec2 };
+	uuid: UUID;
 }
 
 export type Generic2DPort = {
@@ -48,23 +46,25 @@ export type Generic2DPort = {
 	port: string;
 };
 
-export class Generic2DConnection {
-	constructor(
-		public start: Generic2DPort | "input",
-		public end: Generic2DPort | "output",
-	) {}
+export interface Generic2DConnection {
+	start: Generic2DPort | "input";
+	end: Generic2DPort | "output";
 }
 
-export class Generic2DCircut {
-	constructor(
-		public components: Generic2DComponent[],
-		public connections: Generic2DConnection[],
-	) {}
+export interface Generic2DCircut {
+	components: Generic2DComponent[];
+	connections: Generic2DConnection[];
 }
 
-export class Generic2DLayout {
-	constructor(
-		public components: Generic2DCircut,
-		public positions: Map<UUID, Vec2>,
-	) {}
+export interface Generic2DLayout {
+	components: Generic2DCircut;
+	positions: { [key: string]: Vec2 };
+}
+
+export interface Generic2DLayoutResult {
+	best: Generic2DLayout;
+	overtime: {
+		[key: number]: Generic2DLayout;
+	};
+	energy: number;
 }

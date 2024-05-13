@@ -1,0 +1,8 @@
+{
+  "name": "hermes",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ]
+}

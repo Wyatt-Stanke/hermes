@@ -1,6 +1,6 @@
-import { applyResets } from "backend/src/schematic/resets";
-import { Schematic } from "backend/src/schematic/schematic";
-import { Block } from "backend/src/constants";
+import { applyResets } from "@/schematic/resets";
+import { Schematic } from "@/schematic/schematic";
+import { Block } from "@/constants";
 import fs from "node:fs/promises";
 
 export const readSchematic = async (path: string) => {

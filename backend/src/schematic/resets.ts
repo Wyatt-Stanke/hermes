@@ -1,6 +1,6 @@
-import { Block } from "backend/src/constants";
+import { Block } from "@/constants";
 import type { Schematic } from "./schematic";
-import { debug, fatal, info, warn } from "backend/src/logger";
+import { debug, fatal, info, warn } from "@/logger";
 
 export function applyResets(schem: Schematic) {
 	const resets = [
