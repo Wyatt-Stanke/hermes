@@ -41,8 +41,8 @@ endmodule`,
 	);
 	const layout = trpc.anneal2d.useQuery(
 		{
-			components: circut.data?.components ?? [],
-			connections: circut.data?.connections ?? [],
+			components: circut.data?.components as any[],
+			connections: circut.data?.connections as any[],
 			iterations,
 			temperature,
 			cooling,
@@ -153,29 +153,20 @@ endmodule`,
 					const start = connection.start;
 					const end = connection.end;
 
-					let startPortPosition: { x: number; y: number };
-					if (start === "input") {
-						startPortPosition = transformXY(0, 0);
-					} else {
-						startPortPosition =
-							portPositions[start.component.uuid + start.port];
+					const startPortPosition: { x: number; y: number } =
+						portPositions[start.component.uuid + start.port];
 
-						if (!startPortPosition) {
-							console.error(
-								"Could not find position for port",
-								start.component.uuid,
-								start.port,
-							);
-							continue;
-						}
+					if (!startPortPosition) {
+						console.error(
+							"Could not find position for port",
+							start.component.uuid,
+							start.port,
+						);
+						continue;
 					}
 
-					let endPortPosition: { x: number; y: number };
-					if (end === "output") {
-						endPortPosition = transformXY(15, 0);
-					} else {
-						endPortPosition = portPositions[end.component.uuid + end.port];
-					}
+					const endPortPosition: { x: number; y: number } =
+						portPositions[end.component.uuid + end.port];
 
 					ctx.strokeStyle = "black";
 					ctx.beginPath();

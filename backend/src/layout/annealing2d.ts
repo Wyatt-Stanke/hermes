@@ -1,6 +1,6 @@
 // Layout algorithm based on simulated annealing for 2D graphs
 
-import { debug, fatal, info } from "@/logger";
+import { debug, error, fatal, info, warn } from "@/logger";
 import {
 	type Generic2DCircut,
 	type Generic2DLayout,
@@ -31,8 +31,43 @@ function deepCloneWithVec2<T>(obj: T): T {
 	return obj;
 }
 
+enum EnergyStage {
+	Overlap = 1,
+	WireLength = 2,
+}
+
+interface Energy {
+	// Energy value (lower is better)
+	number: number;
+	// Energy stage (higher is better -- prefer higher stage)
+	stage: EnergyStage;
+}
+
+function energyBetterThan(a: Energy, b: Energy): boolean {
+	if (a.stage !== b.stage) {
+		return a.stage > b.stage;
+	}
+	return a.number < b.number;
+}
+
+function energyDelta(a: Energy, b: Energy): number {
+	if (a.stage !== b.stage) {
+		// Big change -- return the difference in stages times a big number
+		// TODO: more scientific way to calculate this
+		return (a.stage - b.stage) * 10000;
+	}
+	return a.number - b.number;
+}
+
+function energyToString(energy: Energy): string {
+	return `${energy.number} (${energy.stage})`;
+}
+
 // Function to minimize
-function energy2D(layout: Generic2DLayout): number {
+function energy2D(layout: Generic2DLayout): {
+	energy: Energy;
+	isOverlap: boolean;
+} {
 	let energy = 0;
 	let isOverlap = false;
 
@@ -49,13 +84,9 @@ function energy2D(layout: Generic2DLayout): number {
 
 	for (let i = 0; i < components.length; i++) {
 		const [pos1, size1] = components[i];
-		for (let j = 0; j < components.length; j++) {
-			if (i === j) {
-				continue;
-			}
+		for (let j = i + 1; j < components.length; j++) {
+			if (i === j) continue;
 			const [pos2, size2] = components[j];
-
-			// Check for overlap
 			if (
 				pos1.x < pos2.x + size2.x &&
 				pos1.x + size1.x > pos2.x &&
@@ -63,8 +94,14 @@ function energy2D(layout: Generic2DLayout): number {
 				pos1.y + size1.y > pos2.y
 			) {
 				isOverlap = true;
-				// add energy based amount of overlap
-				energy += Math.abs(pos1.x + size1.x / 2 - (pos2.x + size2.x / 2));
+				// Add energy based on overlap
+				const dx =
+					Math.min(pos1.x + size1.x, pos2.x + size2.x) -
+					Math.max(pos1.x, pos2.x);
+				const dy =
+					Math.min(pos1.y + size1.y, pos2.y + size2.y) -
+					Math.max(pos1.y, pos2.y);
+				energy += dx * dy;
 			}
 		}
 	}
@@ -80,53 +117,52 @@ function energy2D(layout: Generic2DLayout): number {
 			let startPos: Vec2;
 			let endPos: Vec2;
 
-			if (start === "input") {
-				startPos = new Vec2(0, 0);
-			} else {
-				const comp =
-					layout.components.components.find(
-						(comp) => comp.uuid.uuid === start.component.uuid,
-					) || fatal("Component not found in layout - 2");
-				startPos =
-					layout.positions[comp.uuid.uuid] ||
-					fatal("Component not found in layout - 3");
-				startPos = startPos.add(comp.ports[start.port] || new Vec2(0, 0));
-			}
+			const startComp =
+				layout.components.components.find(
+					(comp) => comp.uuid.uuid === start.component.uuid,
+				) || fatal("Component not found in layout - 2");
+			startPos =
+				layout.positions[startComp.uuid.uuid] ||
+				fatal("Component not found in layout - 3");
+			startPos = startPos.add(startComp.ports[start.port] || new Vec2(0, 0));
 
-			if (end === "output") {
-				// TODO: better position for output
-				endPos = new Vec2(15, 0);
-			} else {
-				const comp =
-					layout.components.components.find(
-						(comp) => comp.uuid.uuid === end.component.uuid,
-					) || fatal("Component not found in layout - 4");
-				endPos =
-					layout.positions[comp.uuid.uuid] ||
-					fatal("Component not found in layout - 5");
-				endPos = endPos.add(comp.ports[end.port] || new Vec2(0, 0));
-			}
+			const endComp =
+				layout.components.components.find(
+					(comp) => comp.uuid.uuid === end.component.uuid,
+				) || fatal("Component not found in layout - 4");
+			endPos =
+				layout.positions[endComp.uuid.uuid] ||
+				fatal("Component not found in layout - 5");
+			endPos = endPos.add(endComp.ports[end.port] || new Vec2(0, 0));
 
 			const dx = startPos.x - endPos.x;
 			const dy = startPos.y - endPos.y;
-			energy += dx * dx + dy * dy;
+			energy += (dx * dx + dy * dy) ** 2;
 		}
-		return energy;
 	}
-	// Make sure energy is greater than 100
-	// while (energy < 100) {
-	// 	energy *= 10;
-	// }
-	energy *= 1e6;
-	return energy;
+	if (energy === 0) {
+		error("Energy is 0");
+		error("-- Debug info --");
+		error(`Overlap: ${isOverlap}`);
+		throw new Error("Energy is 0");
+	}
+	return {
+		energy: {
+			number: energy,
+			// TODO: cleanup
+			stage: isOverlap ? EnergyStage.Overlap : EnergyStage.WireLength,
+		},
+		isOverlap,
+	};
 }
 
 export function annealing2D(
 	circut: Generic2DCircut,
 	iterations: number,
-	temperature: number,
+	initialTemperature: number,
 	cooling: number,
 ): Generic2DLayoutResult {
+	let temperature = initialTemperature;
 	const result: Generic2DLayoutResult = {
 		overtime: {},
 		best: {
@@ -151,13 +187,13 @@ export function annealing2D(
 	const layout: { [key: string]: Vec2 } = {};
 	for (const comp of components) {
 		layout[comp.uuid.uuid] = new Vec2(
-			Math.random() * (msl * 4) - msl * 2,
-			Math.random() * (msl * 4) - msl * 2,
+			Math.round(Math.random() * (msl * 4) - msl * 2),
+			Math.round(Math.random() * (msl * 4) - msl * 2),
 		);
 	}
 
 	let bestLayout = deepCloneWithVec2(layout);
-	let bestEnergy = energy2D({
+	let { energy: bestEnergy } = energy2D({
 		components: circut,
 		positions: bestLayout,
 	});
@@ -166,50 +202,67 @@ export function annealing2D(
 	let currentEnergy = bestEnergy;
 
 	for (let i = 0; i < iterations; i++) {
-		const newLayout = deepCloneWithVec2(currentLayout);
-		const comp = components[Math.floor(Math.random() * components.length)];
-		const pos =
-			newLayout[comp.uuid.uuid] || fatal("Component not found in layout - 6");
+		for (let c = 0; c < components.length; c++) {
+			const newLayout = deepCloneWithVec2(currentLayout);
 
-		newLayout[comp.uuid.uuid] = pos.add(
-			new Vec2(Math.random() * 2 - 1, Math.random() * 2 - 1),
-		);
+			const comp = components[c];
+			const pos =
+				newLayout[comp.uuid.uuid] || fatal("Component not found in layout - 6");
 
-		const newEnergy = energy2D({
-			components: circut,
-			positions: newLayout,
-		});
+			const newX = Math.round(pos.x + (Math.random() * 2 - 1));
+			const newY = Math.round(pos.y + (Math.random() * 2 - 1));
 
-		if (
-			newEnergy < currentEnergy ||
-			boltzmann(newEnergy - currentEnergy, temperature)
-		) {
-			currentLayout = deepCloneWithVec2(newLayout);
-			currentEnergy = newEnergy;
-		}
+			newLayout[comp.uuid.uuid] = new Vec2(newX, newY);
 
-		if (newEnergy < bestEnergy) {
-			bestLayout = deepCloneWithVec2(newLayout);
-			bestEnergy = newEnergy;
+			const { energy: newEnergy, isOverlap } = energy2D({
+				components: circut,
+				positions: newLayout,
+			});
+
+			if (
+				energyBetterThan(newEnergy, currentEnergy) ||
+				boltzmann(energyDelta(newEnergy, currentEnergy), temperature)
+			) {
+				currentLayout = deepCloneWithVec2(newLayout);
+				currentEnergy = newEnergy;
+			}
+
+			if (energyBetterThan(newEnergy, bestEnergy)) {
+				bestLayout = deepCloneWithVec2(newLayout);
+				bestEnergy = newEnergy;
+			}
 		}
 
 		temperature *= cooling;
 		if (i % 100 === 0) {
-			info(`Iteration ${i}: ${bestEnergy}`);
+			info(`Iteration ${i}: ${energyToString(bestEnergy)} (t=${temperature})`);
 			result.overtime[i] = {
 				components: circut,
 				positions: bestLayout,
 			};
 		}
+
+		// // Get the constant component
+		// console.log(
+		// 	bestLayout[
+		// 		components.find((comp) => comp.name.startsWith("constant"))!.uuid.uuid
+		// 	],
+		// );
 	}
 
-	info(`Best energy: ${bestEnergy}`);
+	info(`Best energy: ${energyToString(bestEnergy)}`);
+	info(
+		`Overlap: ${
+			energy2D({ components: circut, positions: bestLayout }).isOverlap
+		}`,
+	);
 
 	result.best = {
 		components: circut,
 		positions: bestLayout,
 	};
-	result.energy = bestEnergy;
+	// TODO: send energy stage
+	result.energy = bestEnergy.number;
 
 	return result;
 }

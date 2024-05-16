@@ -1,6 +1,5 @@
 import v from "vec3";
 import { readSchematic } from "../utils";
-import { Block, data, Registry, type DataBlock } from "@/constants";
 import { Schematic } from "@/schematic/schematic";
 import { comp } from "prismarine-nbt";
 import { Component } from "@/components/component";

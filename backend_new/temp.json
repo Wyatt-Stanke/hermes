@@ -10,15 +10,15 @@
       "ports": {
         "clock": {
           "direction": "input",
-          "bits": [ 2 ]
+          "bits": [2]
         },
         "reset": {
           "direction": "input",
-          "bits": [ 3 ]
+          "bits": [3]
         },
         "count": {
           "direction": "output",
-          "bits": [ 4, 5, 6, 7, 8, 9, 10, 11 ]
+          "bits": [4, 5, 6, 7, 8, 9, 10, 11]
         }
       },
       "cells": {
@@ -41,9 +41,9 @@
             "Y": "output"
           },
           "connections": {
-            "A": [ 4, 5, 6, 7, 8, 9, 10, 11 ],
-            "B": [ "1" ],
-            "Y": [ 12, 13, 14, 15, 16, 17, 18, 19 ]
+            "A": [4, 5, 6, 7, 8, 9, 10, 11],
+            "B": ["1"],
+            "Y": [12, 13, 14, 15, 16, 17, 18, 19]
           }
         },
         "$auto$ff.cc:266:slice$6": {
@@ -65,37 +65,36 @@
             "SRST": "input"
           },
           "connections": {
-            "CLK": [ 2 ],
-            "D": [ 12, 13, 14, 15, 16, 17, 18, 19 ],
-            "Q": [ 4, 5, 6, 7, 8, 9, 10, 11 ],
-            "SRST": [ 3 ]
+            "CLK": [2],
+            "D": [12, 13, 14, 15, 16, 17, 18, 19],
+            "Q": [4, 5, 6, 7, 8, 9, 10, 11],
+            "SRST": [3]
           }
         }
       },
       "netnames": {
         "$add$temp.v:9$2_Y": {
           "hide_name": 1,
-          "bits": [ 12, 13, 14, 15, 16, 17, 18, 19 ],
-          "attributes": {
-          }
+          "bits": [12, 13, 14, 15, 16, 17, 18, 19],
+          "attributes": {}
         },
         "clock": {
           "hide_name": 0,
-          "bits": [ 2 ],
+          "bits": [2],
           "attributes": {
             "src": "temp.v:4.7-4.12"
           }
         },
         "count": {
           "hide_name": 0,
-          "bits": [ 4, 5, 6, 7, 8, 9, 10, 11 ],
+          "bits": [4, 5, 6, 7, 8, 9, 10, 11],
           "attributes": {
             "src": "temp.v:5.14-5.19"
           }
         },
         "reset": {
           "hide_name": 0,
-          "bits": [ 3 ],
+          "bits": [3],
           "attributes": {
             "src": "temp.v:4.14-4.19"
           }

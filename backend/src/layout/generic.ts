@@ -47,8 +47,8 @@ export type Generic2DPort = {
 };
 
 export interface Generic2DConnection {
-	start: Generic2DPort | "input";
-	end: Generic2DPort | "output";
+	start: Generic2DPort;
+	end: Generic2DPort;
 }
 
 export interface Generic2DCircut {

@@ -29,70 +29,74 @@ import { annealing2D } from "./layout/annealing2d";
 import { runServer } from "./server/server";
 import { compile } from "./yosys";
 import { generateComponentsAndConnections } from "./components";
+import { zodToJsonSchema } from "zod-to-json-schema";
+import { yosysDataSchema } from "./yosys/schemas";
 
-if (process.argv[2] === "server") {
-	runServer();
-	await new Promise(() => {});
-}
+console.log(JSON.stringify(zodToJsonSchema(yosysDataSchema)));
 
-// Schematics folder:
-// /Users/wyattstanke/Library/Application Support/com.modrinth.theseus/profiles/Redstone Essentials/config/worldedit/schematics
+// if (process.argv[2] === "server") {
+// 	runServer();
+// 	await new Promise(() => {});
+// }
 
-// await WORLD.savingInterval;
-// await SDFFSchematic.paste(WORLD, new Vec3(8, 8, 8));
+// // Schematics folder:
+// // /Users/wyattstanke/Library/Application Support/com.modrinth.theseus/profiles/Redstone Essentials/config/worldedit/schematics
 
-const outFile =
-	"/Users/wyattstanke/Library/Application Support/com.modrinth.theseus/profiles/Redstone Essentials/config/worldedit/schematics/out.schem";
-const wire = [v(0, 0, 0), v(1, 0, 0)];
-const schem = new Wire(wire).render();
-const buffer = await schem.write();
-// console.log(SDFFSchematic.blockIndex);
-await writeFile(outFile, buffer);
+// // await WORLD.savingInterval;
+// // await SDFFSchematic.paste(WORLD, new Vec3(8, 8, 8));
 
-for (const file of ["temp.json", "temp.png", "temp.dot"]) {
-	if (await exists(file)) {
-		await unlink(file);
-	}
-}
+// const outFile =
+// 	"/Users/wyattstanke/Library/Application Support/com.modrinth.theseus/profiles/Redstone Essentials/config/worldedit/schematics/out.schem";
+// const wire = [v(0, 0, 0), v(1, 0, 0)];
+// const schem = new Wire(wire).render();
+// const buffer = await schem.write();
+// // console.log(SDFFSchematic.blockIndex);
+// await writeFile(outFile, buffer);
 
-const binary = "./yosys/yosys";
-const source = "./always.v";
-const output = "temp.json";
+// for (const file of ["temp.json", "temp.png", "temp.dot"]) {
+// 	if (await exists(file)) {
+// 		await unlink(file);
+// 	}
+// }
 
-const data = await compile(await readFile(source).then((b) => b.toString()));
-class IOSignal {
-	constructor(
-		public name: string,
-		public bits: number[],
-		public direction: "input" | "output",
-	) {}
-}
+// const binary = "./yosys/yosys";
+// const source = "./always.v";
+// const output = "temp.json";
 
-class InternalSignal {
-	constructor(
-		public name: string,
-		public bits: number[],
-	) {}
-}
+// const data = await compile(await readFile(source).then((b) => b.toString()));
+// class IOSignal {
+// 	constructor(
+// 		public name: string,
+// 		public bits: number[],
+// 		public direction: "input" | "output",
+// 	) {}
+// }
 
-const nets = [];
+// class InternalSignal {
+// 	constructor(
+// 		public name: string,
+// 		public bits: number[],
+// 	) {}
+// }
 
-const modules = Object.values(data.modules);
-const module = modules[0];
+// const nets = [];
 
-for (const [name, net] of Object.entries(module.netnames)) {
-	if (module.ports[name]) {
-		const port = module.ports[name];
-		nets.push(new IOSignal(name, net.bits, port.direction));
-	} else {
-		nets.push(new InternalSignal(name, net.bits));
-	}
-}
+// const modules = Object.values(data.modules);
+// const module = modules[0];
 
-const { components, connections } = generateComponentsAndConnections(module);
-const circut: Generic2DCircut = { components, connections };
-const layout = annealing2D(circut);
+// for (const [name, net] of Object.entries(module.netnames)) {
+// 	if (module.ports[name]) {
+// 		const port = module.ports[name];
+// 		nets.push(new IOSignal(name, net.bits, port.direction));
+// 	} else {
+// 		nets.push(new InternalSignal(name, net.bits));
+// 	}
+// }
 
-const workspace = Schematic.empty;
+// const { components, connections } = generateComponentsAndConnections(module);
+// const circut: Generic2DCircut = { components, connections };
+// const layout = annealing2D(circut);
 
-debug(`Took ${(nanoseconds() - startTime) / 1e6} ms`);
+// const workspace = Schematic.empty;
+
+// debug(`Took ${(nanoseconds() - startTime) / 1e6} ms`);

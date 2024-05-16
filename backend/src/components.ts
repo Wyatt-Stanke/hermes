@@ -18,11 +18,27 @@ export function generateComponentsAndConnections(module: Module): {
 } {
 	const components: Generic2DComponent[] = [];
 	const connections: Generic2DConnection[] = [];
+
+	// Create an global input/output component
+	const inputComponent: Generic2DComponent = {
+		name: "input",
+		size: new Vec2(1, 1),
+		ports: { IO: new Vec2(0, 0) },
+		uuid: new UUID(),
+	};
+
+	const outputComponent: Generic2DComponent = {
+		name: "output",
+		size: new Vec2(1, 1),
+		ports: { IO: new Vec2(0, 0) },
+		uuid: new UUID(),
+	};
+
+	components.push(inputComponent, outputComponent);
+
 	for (const [name, cell] of Object.entries(module.cells)) {
 		let comp: Component | null = null;
 		let tagPorts: Record<string, string> | null = null;
-
-		console.log(cell.parameters);
 
 		switch (cell.type) {
 			case "$sdff":
@@ -162,10 +178,16 @@ export function generateComponentsAndConnections(module: Module): {
 				cell !== null && typeof cell === "object" && "type" in cell;
 
 			for (const output of outputs) {
-				let outputConnection: Generic2DPort | "output";
+				let outputConnection: Generic2DPort;
 				if (isPort(output[1])) {
-					outputConnection = "output";
+					// console.log("port", output);
+					// Connect to the global output component
+					outputConnection = {
+						component: outputComponent.uuid,
+						port: "IO",
+					};
 				} else if (isCell(output[1])) {
+					// console.log("cell", output);
 					const [outputName, outputCell] = output;
 					const portName = Object.entries(outputCell.connections).find(
 						([_, bits]) => bits.includes(bit),
@@ -184,9 +206,13 @@ export function generateComponentsAndConnections(module: Module): {
 				}
 
 				for (const input of inputs) {
-					let inputConnection: Generic2DPort | "input";
+					let inputConnection: Generic2DPort;
 					if (isPort(input[1])) {
-						inputConnection = "input";
+						// Connect to the global input component
+						inputConnection = {
+							component: inputComponent.uuid,
+							port: "IO",
+						};
 					} else {
 						const [inputName, inputCell] = input;
 						const portName = Object.entries(inputCell.connections).find(
