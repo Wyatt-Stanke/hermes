@@ -1,3 +1,3 @@
-[submodule "backend/yosys"]
-	path = backend/yosys
+[submodule "backend_new/yosys"]
+	path = backend_new/yosys
 	url = https://github.com/YosysHQ/yosys/
